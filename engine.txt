@@ -1,0 +1,4 @@
+
+Frames are *interpolated* (unless draw frame rate is hard-locked to logic frame rate). Extrapolation is generally not
+recommended as the errors are too visible and occur too often. We might consider extrapolation in emergency cases
+in the future (e.g. networked games with high lag).

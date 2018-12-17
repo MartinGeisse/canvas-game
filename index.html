@@ -1,0 +1,16 @@
+<html>
+<head>
+    <script type="text/javascript" src="build/engine.js"></script>
+    <script type="text/javascript" src="build/resources.js"></script>
+    <script type="text/javascript" src="build/blockmap.js"></script>
+    <script type="text/javascript" src="build/game.js"></script>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="600">
+    <script type="text/javascript">
+        Engine.initialize(document.getElementById("canvas"));
+        Game.initialize();
+        Engine.startLoop(100, true);
+    </script>
+</body>
+</html>

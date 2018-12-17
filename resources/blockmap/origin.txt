@@ -1,0 +1,8 @@
+http://opengameart.org/content/generic-platformer-tileset-16x16-background
+	deep-ground.png
+	ground.png
+http://opengameart.org/content/spinning-gold-coin
+	coin.png
+http://opengameart.org/content/square-block-textures
+	coinbox.png
+	emptybox.png
