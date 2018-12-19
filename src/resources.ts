@@ -7,13 +7,14 @@ namespace Resources {
     
     function loadImage(name : string, extension : string = 'png') : HTMLImageElement {
         var image = new Image();
-        image.src = 'resources/blockmap/' + name + '.' + extension;
+        image.src = 'resources/' + name + '.' + extension;
         return image;
     }
 
     export var textures : Textures = {
         'emptybox': loadImage('emptybox'),
         'coinbox': loadImage('coinbox'),
+        'coin': loadImage('coin'),
     };
 
 }

@@ -92,8 +92,15 @@ namespace Game {
         public dy : number = 0;
         public jumpPower : number = 0;
 
+        private oldX : number = 0;
+        private oldY : number = 0;
+
         logic() : void {
 
+            // remember old position for interpolation
+            this.oldX = this.x;
+            this.oldY = this.y;
+            
             // left/right movement
             if (Engine.keyState['ArrowLeft']) {
                 this.dx -= Player.RUN_ACCELERATION;
@@ -126,10 +133,12 @@ namespace Game {
                 this.dx = 0;
             }
 
+            // jumping and falling
             if (this.dy < 0) {
 
                 if (Engine.keyState['ArrowUp'] && this.jumpPower > 0) {
                     this.dy = -Player.JUMP_SPEED;
+                    this.jumpPower--;
                 } else {
                     this.jumpPower = 0;
                     this.dy += Player.GRAVITY;
@@ -155,16 +164,25 @@ namespace Game {
                 }
             }
 
+            // collecting coins
+            var map : Blockmap.Map = (Engine.scene as Scene).map;
+            var blockCode = map.getCode(Math.floor(this.x), Math.floor(this.y));
+            if (blockCode == 3) {
+                map.setCode(Math.floor(this.x), Math.floor(this.y), 0);
+            }
+
         }
 
         private collidesWithBlockmap() : boolean {
             var map : Blockmap.Map = (Engine.scene as Scene).map;
-            return map.any(this.x - Player.RADIUS_X, this.y - Player.RADIUS_Y, this.x + Player.RADIUS_X, this.y + Player.RADIUS_Y, type => (type as BlockType).solid;
+            return map.any(this.x - Player.RADIUS_X, this.y - Player.RADIUS_Y, this.x + Player.RADIUS_X, this.y + Player.RADIUS_Y, type => (type as BlockType).solid);
         }
 
         draw(fraction : number) : void {
+            var x = this.oldX + (this.x - this.oldX) * fraction;
+            var y = this.oldY + (this.y - this.oldY) * fraction;
             Engine.canvasContext.fillStyle = 'red';
-            Engine.canvasContext.fillRect(this.x - Player.RADIUS_X, this.y - Player.RADIUS_Y, 2 * Player.RADIUS_X, 2 * Player.RADIUS_Y);
+            Engine.canvasContext.fillRect(x - Player.RADIUS_X, y - Player.RADIUS_Y, 2 * Player.RADIUS_X, 2 * Player.RADIUS_Y);
         }
 
         getZIndex() : number {
@@ -182,6 +200,7 @@ namespace Game {
             new BlockType(null, false),
             new BlockType(Resources.textures['emptybox'], true),
             new BlockType(Resources.textures['coinbox'], true),
+            new BlockType(Resources.textures['coin'], false),
         ];
         var map : Blockmap.Map = new Blockmap.Map(20, 10, blockTable);
         scene.map = map;
@@ -196,6 +215,9 @@ namespace Game {
         }
         map.setCode(1, 1, 2);
         map.setCode(18, 1, 2);
+        for (var i = 10; i < 13; i++) {
+            map.setCode(i, 6, 3);
+        }
 
         scene.add(map);
 
