@@ -78,6 +78,25 @@ namespace Blockmap {
             return 1;
         }
 
+        public any(x1 : number, y1: number, x2 : number, y2 : number, predicate : (blockType: BlockType) => boolean) : boolean {
+            return this.anyAll(x1, y1, x2, y2, predicate, true);
+        }
+
+        public all(x1 : number, y1: number, x2 : number, y2 : number, predicate : (blockType: BlockType) => boolean) : boolean {
+            return this.anyAll(x1, y1, x2, y2, predicate, false);
+        }
+
+        private anyAll(x1 : number, y1: number, x2 : number, y2 : number, predicate : (blockType: BlockType) => boolean, onMixed : boolean) : boolean {
+            for (var x = Math.floor(x1); x < Math.ceil(x2); x++) {
+                for (var y = Math.floor(y1); y < Math.ceil(y2); y++) {
+                    if (predicate(this.getBlock(x, y)) == onMixed) {
+                        return onMixed;
+                    }
+                }
+            }
+            return !onMixed;
+        }
+
     }
 
 }

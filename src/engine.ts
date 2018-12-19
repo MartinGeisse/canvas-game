@@ -58,12 +58,6 @@ namespace Engine {
         getZIndex() : number;
     }
 
-    /*
-    export class Actor implements SceneObject {
-
-    }
-    */
-
     function handleLogicFrame() {
         if (scene != null) {
             scene.logic();
@@ -116,4 +110,15 @@ namespace Engine {
 
         }
     }
+
+    export var keyState = [];
+
+    export function onKeyDown(event) {
+        keyState[event.key] = true;
+    }
+
+    export function onKeyUp(event) {
+        keyState[event.key] = false;
+    }
+
 }

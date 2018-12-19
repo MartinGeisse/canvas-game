@@ -1,6 +1,26 @@
 
 namespace Game {
 
+    export class BlockType extends Blockmap.BlockType {
+
+        constructor(image : HTMLImageElement, public solid : boolean) {
+            super(image);
+        }
+
+    }
+
+    export class Scene extends Engine.Scene {
+
+        public map : Blockmap.Map;
+        public player : Player;
+
+        constructor()  {
+            super();
+            this.add(new Background());
+        }
+
+    }
+
     export class Background implements Engine.SceneObject {
 
         logic() : void {
@@ -54,34 +74,137 @@ namespace Game {
 
     }
 
+    export class Player implements Engine.SceneObject {
+
+        public static INITIAL_JUMP_POWER : number = 3;
+        public static JUMP_SPEED : number = 0.5;
+        public static MAX_FALL_SPEED : number = 0.4;
+        public static RUN_ACCELERATION : number = 0.05 ;
+        public static RUN_DECELERATION : number = 0.02;
+        public static RUN_SPEED : number = 0.3;
+        public static RADIUS_X : number = 0.3;
+        public static RADIUS_Y : number = 0.5;
+        public static GRAVITY : number = 0.1;
+
+        public x : number = 0;
+        public y : number = 0;
+        public dx : number = 0;
+        public dy : number = 0;
+        public jumpPower : number = 0;
+
+        logic() : void {
+
+            // left/right movement
+            if (Engine.keyState['ArrowLeft']) {
+                this.dx -= Player.RUN_ACCELERATION;
+            } else if (Engine.keyState['ArrowRight']) {
+                this.dx += Player.RUN_ACCELERATION;
+            } else if (this.dx < 0) {
+                this.dx += Player.RUN_DECELERATION;
+                if (this.dx > 0) {
+                    this.dx = 0;
+                }
+            } else if (this.dx > 0) {
+                this.dx -= Player.RUN_DECELERATION;
+                if (this.dx < 0) {
+                    this.dx = 0;
+                }
+            }
+            if (this.dx < -Player.RUN_SPEED) {
+                this.dx = -Player.RUN_SPEED;
+            }
+            if (this.dx > Player.RUN_SPEED) {
+                this.dx = Player.RUN_SPEED;
+            }
+            this.x += this.dx;
+            if (this.collidesWithBlockmap()) {
+                if (this.dx > 0) {
+                    this.x = Math.ceil(this.x) - Player.RADIUS_X;
+                } else {
+                    this.x = Math.floor(this.x) + Player.RADIUS_X;
+                }
+                this.dx = 0;
+            }
+
+            if (this.dy < 0) {
+
+                if (Engine.keyState['ArrowUp'] && this.jumpPower > 0) {
+                    this.dy = -Player.JUMP_SPEED;
+                } else {
+                    this.jumpPower = 0;
+                    this.dy += Player.GRAVITY;
+                }
+                this.y += this.dy;
+                if (this.collidesWithBlockmap()) {
+                    this.y = Math.floor(this.y) + Player.RADIUS_Y;
+                    this.dy = 0;
+                }
+            } else {
+                this.dy += Player.GRAVITY;
+                if (this.dy > Player.MAX_FALL_SPEED) {
+                    this.dy = Player.MAX_FALL_SPEED;
+                }
+                this.y += this.dy;
+                if (this.collidesWithBlockmap()) {
+                    this.y = Math.ceil(this.y) - Player.RADIUS_Y;
+                    this.dy = 0;
+                    this.jumpPower = Player.INITIAL_JUMP_POWER;
+                    if (Engine.keyState['ArrowUp']) {
+                        this.dy = -Player.JUMP_SPEED;
+                    }
+                }
+            }
+
+        }
+
+        private collidesWithBlockmap() : boolean {
+            var map : Blockmap.Map = (Engine.scene as Scene).map;
+            return map.any(this.x - Player.RADIUS_X, this.y - Player.RADIUS_Y, this.x + Player.RADIUS_X, this.y + Player.RADIUS_Y, type => (type as BlockType).solid;
+        }
+
+        draw(fraction : number) : void {
+            Engine.canvasContext.fillStyle = 'red';
+            Engine.canvasContext.fillRect(this.x - Player.RADIUS_X, this.y - Player.RADIUS_Y, 2 * Player.RADIUS_X, 2 * Player.RADIUS_Y);
+        }
+
+        getZIndex() : number {
+            return 2;
+        }
+
+    }
+
     export function initialize() {
 
+        var scene : Scene = new Scene();
+        Engine.scene = scene;
+
         var blockTable : Blockmap.BlockType[] = [
-            new Blockmap.BlockType(null),
-            new Blockmap.BlockType(Resources.textures['emptybox']),
-            new Blockmap.BlockType(Resources.textures['coinbox']),
+            new BlockType(null, false),
+            new BlockType(Resources.textures['emptybox'], true),
+            new BlockType(Resources.textures['coinbox'], true),
         ];
-        var map : Blockmap.Map = new Blockmap.Map(10, 5, blockTable);
-        for (var i = 0; i < 10; i++) {
+        var map : Blockmap.Map = new Blockmap.Map(20, 10, blockTable);
+        scene.map = map;
+
+        for (var i = 0; i < 20; i++) {
             map.setCode(i, 0, 1);
-            map.setCode(i, 4, 1);
+            map.setCode(i, 9, 1);
         }
         for (var i = 0; i < 10; i++) {
             map.setCode(0, i, 1);
-            map.setCode(9, i, 1);
+            map.setCode(19, i, 1);
         }
         map.setCode(1, 1, 2);
-        map.setCode(8, 1, 2);
+        map.setCode(18, 1, 2);
 
-        Engine.scene.add(new Background());
-        Engine.scene.add(map);
-        for (var i = 0; i < 50; i++) {
-            if (Math.random() < 0.5) {
-                Engine.scene.add(new MovingCircle('#0000ff', 10));
-            } else {
-                Engine.scene.add(new MovingCircle('#ff0000', 20));
-            }
-        }
+        scene.add(map);
+
+        var player : Player = new Player();
+        player.x = 2;
+        player.y = 3.0;
+        scene.add(player);
+        scene.player = player;
+
     }
 
 }

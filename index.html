@@ -1,11 +1,11 @@
 <html>
 <head>
-    <script type="text/javascript" src="build/engine.js"></script>
-    <script type="text/javascript" src="build/resources.js"></script>
-    <script type="text/javascript" src="build/blockmap.js"></script>
-    <script type="text/javascript" src="build/game.js"></script>
+    <script type="text/javascript" src="build/Engine.js"></script>
+    <script type="text/javascript" src="build/Resources.js"></script>
+    <script type="text/javascript" src="build/Blockmap.js"></script>
+    <script type="text/javascript" src="build/Game.js"></script>
 </head>
-<body>
+<body onkeydown="Engine.onKeyDown(event);" onkeyup="Engine.onKeyUp(event);">
     <canvas id="canvas" width="800" height="600">
     <script type="text/javascript">
         Engine.initialize(document.getElementById("canvas"));
