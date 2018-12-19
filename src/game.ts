@@ -74,6 +74,41 @@ namespace Game {
 
     }
 
+    export class CoinFromCoinboxEffect implements Engine.SceneObject {
+
+        public x : number;
+        private oldY : number = 0;
+        public y : number;
+        public dy : number;
+
+        constructor(x : number, y : number) {
+            this.x = x;
+            this.oldY = y;
+            this.dy = -0.5;
+            this.y = y + this.dy;
+        }
+
+        logic() : void {
+            this.oldY = this.y;
+            this.y += this.dy;
+            this.dy += 0.2;
+            if (this.dy >= 0.5) {
+                Engine.scene.remove(this);
+            }
+        }
+
+        draw(fraction : number) : void {
+            var y = this.oldY + (this.y - this.oldY) * fraction;
+            Engine.canvasContext.fillStyle = 'blue';
+            Engine.canvasContext.fillRect(this.x - 0.2, y - 0.2, 2 * 0.2, 2 * 0.2);
+        }
+
+        getZIndex() : number {
+            return 3;
+        }
+
+    }
+
     export class Player implements Engine.SceneObject {
 
         public static INITIAL_JUMP_POWER : number = 3;
@@ -147,6 +182,14 @@ namespace Game {
                 if (this.collidesWithBlockmap()) {
                     this.y = Math.floor(this.y) + Player.RADIUS_Y;
                     this.dy = 0;
+                    // check for coinbox
+                    var map : Blockmap.Map = (Engine.scene as Scene).map;
+                    var coinboxX = Math.floor(this.x);
+                    var coinboxY = Math.floor(this.y) - 1;
+                    if (map.getCode(coinboxX, coinboxY) == 2) {
+                        map.setCode(coinboxX, coinboxY, 1);
+                        Engine.scene.add(new CoinFromCoinboxEffect(coinboxX + 0.5, coinboxY + 0.5));
+                    }
                 }
             } else {
                 this.dy += Player.GRAVITY;
@@ -218,6 +261,8 @@ namespace Game {
         for (var i = 10; i < 13; i++) {
             map.setCode(i, 6, 3);
         }
+        map.setCode(17, 6, 2);
+        map.setCode(18, 6, 2);
 
         scene.add(map);
 
