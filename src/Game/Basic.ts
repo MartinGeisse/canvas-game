@@ -40,6 +40,12 @@ namespace Game {
 
     export abstract class Sprite extends StandardLibrary.Sprite {
 
+        constructor() {
+            super();
+            this.width = 1;
+            this.height = 1;
+        }
+
         getZIndex() : number {
             return 2;
         }

@@ -3,7 +3,7 @@ namespace Game {
 
     export function initialize() {
 
-        Resources.loadTextures(['emptybox', 'coinbox', 'coin', 'player']);
+        Resources.loadTextures(['emptybox', 'coinbox', 'coin', 'playerLeft', 'playerRight']);
 
         var scene : Scene = new Scene();
         Engine.scene = scene;

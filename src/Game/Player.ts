@@ -1,7 +1,7 @@
 
 namespace Game {
 
-    export class Player implements Engine.SceneObject {
+    export class Player extends Sprite {
 
         public static INITIAL_JUMP_POWER : number = 3;
         public static JUMP_SPEED : number = 0.5;
@@ -9,30 +9,31 @@ namespace Game {
         public static RUN_ACCELERATION : number = 0.05 ;
         public static RUN_DECELERATION : number = 0.02;
         public static RUN_SPEED : number = 0.3;
-        public static RADIUS_X : number = 0.3;
-        public static RADIUS_Y : number = 0.5;
+        public static WIDTH : number = 0.6;
+        public static HEIGHT : number = 1.0;
         public static GRAVITY : number = 0.1;
 
-        public x : number = 0;
-        public y : number = 0;
         public dx : number = 0;
         public dy : number = 0;
         public jumpPower : number = 0;
 
-        private oldX : number = 0;
-        private oldY : number = 0;
+        constructor() {
+            super();
+            this.image = Resources.textures.playerRight;
+            this.width = Player.WIDTH;
+            this.height = Player.HEIGHT;
+        }
 
         logic() : void {
-
-            // remember old position for interpolation
-            this.oldX = this.x;
-            this.oldY = this.y;
+            this.saveOldPosition();
             
             // left/right movement
             if (Engine.keyState['ArrowLeft']) {
                 this.dx -= Player.RUN_ACCELERATION;
+                this.image = Resources.textures.playerLeft;
             } else if (Engine.keyState['ArrowRight']) {
                 this.dx += Player.RUN_ACCELERATION;
+                this.image = Resources.textures.playerRight;
             } else if (this.dx < 0) {
                 this.dx += Player.RUN_DECELERATION;
                 if (this.dx > 0) {
@@ -53,9 +54,9 @@ namespace Game {
             this.x += this.dx;
             if (this.collidesWithBlockmap()) {
                 if (this.dx > 0) {
-                    this.x = Math.ceil(this.x) - Player.RADIUS_X;
+                    this.x = Math.ceil(this.x) - this.width;
                 } else {
-                    this.x = Math.floor(this.x) + Player.RADIUS_X;
+                    this.x = Math.ceil(this.x);
                 }
                 this.dx = 0;
             }
@@ -72,12 +73,12 @@ namespace Game {
                 }
                 this.y += this.dy;
                 if (this.collidesWithBlockmap()) {
-                    this.y = Math.floor(this.y) + Player.RADIUS_Y;
+                    this.y = Math.ceil(this.y);
                     this.dy = 0;
                     // check for coinbox
                     var map : StandardLibrary.Map = (Engine.scene as Scene).map;
-                    var coinboxX = Math.floor(this.x);
-                    var coinboxY = Math.floor(this.y) - 1;
+                    var coinboxX = Math.round(this.x);
+                    var coinboxY = this.y - 1;
                     if (map.getCode(coinboxX, coinboxY) == 2) {
                         map.setCode(coinboxX, coinboxY, 1);
                         Engine.scene.add(new CoinFromCoinboxEffect(coinboxX + 0.5, coinboxY + 0.5));
@@ -90,7 +91,7 @@ namespace Game {
                 }
                 this.y += this.dy;
                 if (this.collidesWithBlockmap()) {
-                    this.y = Math.ceil(this.y) - Player.RADIUS_Y;
+                    this.y = Math.ceil(this.y) - this.height;
                     this.dy = 0;
                     this.jumpPower = Player.INITIAL_JUMP_POWER;
                     if (Engine.keyState['ArrowUp']) {
@@ -101,27 +102,18 @@ namespace Game {
 
             // collecting coins
             var map : StandardLibrary.Map = (Engine.scene as Scene).map;
-            var blockCode = map.getCode(Math.floor(this.x), Math.floor(this.y));
+            var mapX = Math.floor(this.x + this.width / 2);
+            var mapY = Math.floor(this.y + this.height / 2);
+            var blockCode = map.getCode(mapX, mapY);
             if (blockCode == 3) {
-                map.setCode(Math.floor(this.x), Math.floor(this.y), 0);
+                map.setCode(mapX, mapY, 0);
             }
 
         }
 
         private collidesWithBlockmap() : boolean {
             var map : StandardLibrary.Map = (Engine.scene as Scene).map;
-            return map.any(this.x - Player.RADIUS_X, this.y - Player.RADIUS_Y, this.x + Player.RADIUS_X, this.y + Player.RADIUS_Y, type => (type as BlockType).solid);
-        }
-
-        draw(fraction : number) : void {
-            var x = this.oldX + (this.x - this.oldX) * fraction;
-            var y = this.oldY + (this.y - this.oldY) * fraction;
-            Engine.canvasContext.fillStyle = 'red';
-            Engine.canvasContext.fillRect(x - Player.RADIUS_X, y - Player.RADIUS_Y, 2 * Player.RADIUS_X, 2 * Player.RADIUS_Y);
-        }
-
-        getZIndex() : number {
-            return 2;
+            return map.any(this.x, this.y, this.x + this.width, this.y + this.height, type => (type as BlockType).solid);
         }
 
     }
