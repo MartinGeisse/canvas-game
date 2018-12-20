@@ -1,35 +1,28 @@
 
 namespace Game {
 
-    export class CoinFromCoinboxEffect implements Engine.SceneObject {
+    export class CoinFromCoinboxEffect extends Sprite {
 
-        public x : number;
-        private oldY : number = 0;
-        public y : number;
         public dy : number;
 
         constructor(x : number, y : number) {
-            this.x = x;
-            this.oldY = y;
+            super();
+            this.x = x - 0.3;
+            this.y = y - 0.3;
+            this.width = 0.6;
+            this.height = 0.6;
+            this.image = Resources.textures.coin;
             this.dy = -0.5;
-            this.y = y + this.dy;
         }
 
         logic() : void {
-            this.oldY = this.y;
+            this.saveOldPosition();
             this.y += this.dy;
             this.dy += 0.2;
             if (this.dy >= 0.5) {
                 Engine.scene.remove(this);
             }
         }
-
-        draw(fraction : number) : void {
-            var y = this.oldY + (this.y - this.oldY) * fraction;
-            Engine.canvasContext.fillStyle = 'blue';
-            Engine.canvasContext.fillRect(this.x - 0.2, y - 0.2, 2 * 0.2, 2 * 0.2);
-        }
-
         getZIndex() : number {
             return 3;
         }
