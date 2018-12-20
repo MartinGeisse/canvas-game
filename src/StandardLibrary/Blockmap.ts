@@ -1,5 +1,5 @@
 
-namespace Blockmap {
+namespace StandardLibrary {
 
     export class BlockType {
 

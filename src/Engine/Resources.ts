@@ -11,10 +11,13 @@ namespace Resources {
         return image;
     }
 
-    export var textures : Textures = {
-        'emptybox': loadImage('emptybox'),
-        'coinbox': loadImage('coinbox'),
-        'coin': loadImage('coin'),
-    };
+    export function loadTextures(names : string[]) {
+        for (var i in names) {
+            var name = names[i];
+            textures[name] = loadImage(name);
+        }
+    }
+
+    export var textures : Textures = {};
 
 }

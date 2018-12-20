@@ -34,10 +34,17 @@ namespace Engine {
             }
         }
         
+        // If the logic of any object adds new objects, their .logic() will be called at the end of the current frame.
         logic() : void {
-            for (var i in this.objects) {
-                this.objects[i].logic();
-            }
+            do {
+                var maxId : number = this.idCounter;
+                for (var i in this.objects) {
+                    var object = this.objects[i];
+                    if ((object as any)._engine_sceneObjectId <= maxId) {
+                        object.logic();
+                    }
+                }
+            } while (this.idCounter != maxId);
         }
 
         draw(fraction : number) : void {

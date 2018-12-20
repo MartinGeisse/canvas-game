@@ -1,114 +1,6 @@
 
 namespace Game {
 
-    export class BlockType extends Blockmap.BlockType {
-
-        constructor(image : HTMLImageElement, public solid : boolean) {
-            super(image);
-        }
-
-    }
-
-    export class Scene extends Engine.Scene {
-
-        public map : Blockmap.Map;
-        public player : Player;
-
-        constructor()  {
-            super();
-            this.add(new Background());
-        }
-
-    }
-
-    export class Background implements Engine.SceneObject {
-
-        logic() : void {
-        }
-
-        draw(fraction : number) : void {
-            Engine.canvasContext.scale(30, 30);
-            Engine.canvasContext.fillStyle = '#000000';
-            Engine.canvasContext.fillRect(0, 0, Engine.canvas.width, Engine.canvas.height);
-        }
-
-        getZIndex() : number {
-            return 0;
-        }
-
-    }
-
-    export class MovingCircle implements Engine.SceneObject {
-
-        public x : number;
-        public y : number;
-        public radius : number;
-        public speed : number;
-        public color : string;
-        public zIndex : number;
-
-        constructor(color : string, zIndex : number) {
-            this.x = Math.random() * Engine.canvas.width;
-            this.y = Math.random() * Engine.canvas.height;
-            this.radius = Math.random() * 50 + 5;
-            this.speed = Math.random() * 20 + 5;
-            this.color = color;
-            this.zIndex = zIndex;
-        }
-
-        logic() : void {
-            this.x = (this.x + this.speed) % 500;
-        }
-
-        draw(fraction : number) : void {
-            var ix = this.x + fraction * this.speed;
-            Engine.canvasContext.fillStyle = this.color;
-            Engine.canvasContext.beginPath();
-            Engine.canvasContext.arc(ix, this.y, this.radius, 0, 2 * Math.PI);
-            Engine.canvasContext.fill();
-        }
-
-        getZIndex() : number {
-            return this.zIndex;
-        }
-
-    }
-
-    export class CoinFromCoinboxEffect implements Engine.SceneObject {
-
-        public x : number;
-        private oldY : number = 0;
-        public y : number;
-        public dy : number;
-
-        constructor(x : number, y : number) {
-            this.x = x;
-            this.oldY = y;
-            this.dy = -0.5;
-            this.y = y + this.dy;
-        }
-
-        logic() : void {
-            this.oldY = this.y;
-            this.y += this.dy;
-            this.dy += 0.2;
-            if (this.dy >= 0.5) {
-                Engine.scene.remove(this);
-            }
-        }
-
-        draw(fraction : number) : void {
-            var y = this.oldY + (this.y - this.oldY) * fraction;
-            Engine.canvasContext.fillStyle = 'blue';
-            Engine.canvasContext.fillRect(this.x - 0.2, y - 0.2, 2 * 0.2, 2 * 0.2);
-        }
-
-        getZIndex() : number {
-            return 3;
-        }
-
-    }
-
     export class Player implements Engine.SceneObject {
 
         public static INITIAL_JUMP_POWER : number = 3;
@@ -183,7 +75,7 @@ namespace Game {
                     this.y = Math.floor(this.y) + Player.RADIUS_Y;
                     this.dy = 0;
                     // check for coinbox
-                    var map : Blockmap.Map = (Engine.scene as Scene).map;
+                    var map : StandardLibrary.Map = (Engine.scene as Scene).map;
                     var coinboxX = Math.floor(this.x);
                     var coinboxY = Math.floor(this.y) - 1;
                     if (map.getCode(coinboxX, coinboxY) == 2) {
@@ -208,7 +100,7 @@ namespace Game {
             }
 
             // collecting coins
-            var map : Blockmap.Map = (Engine.scene as Scene).map;
+            var map : StandardLibrary.Map = (Engine.scene as Scene).map;
             var blockCode = map.getCode(Math.floor(this.x), Math.floor(this.y));
             if (blockCode == 3) {
                 map.setCode(Math.floor(this.x), Math.floor(this.y), 0);
@@ -217,7 +109,7 @@ namespace Game {
         }
 
         private collidesWithBlockmap() : boolean {
-            var map : Blockmap.Map = (Engine.scene as Scene).map;
+            var map : StandardLibrary.Map = (Engine.scene as Scene).map;
             return map.any(this.x - Player.RADIUS_X, this.y - Player.RADIUS_Y, this.x + Player.RADIUS_X, this.y + Player.RADIUS_Y, type => (type as BlockType).solid);
         }
 
@@ -233,45 +125,5 @@ namespace Game {
         }
 
     }
-
-    export function initialize() {
-
-        var scene : Scene = new Scene();
-        Engine.scene = scene;
-
-        var blockTable : Blockmap.BlockType[] = [
-            new BlockType(null, false),
-            new BlockType(Resources.textures['emptybox'], true),
-            new BlockType(Resources.textures['coinbox'], true),
-            new BlockType(Resources.textures['coin'], false),
-        ];
-        var map : Blockmap.Map = new Blockmap.Map(20, 10, blockTable);
-        scene.map = map;
-
-        for (var i = 0; i < 20; i++) {
-            map.setCode(i, 0, 1);
-            map.setCode(i, 9, 1);
-        }
-        for (var i = 0; i < 10; i++) {
-            map.setCode(0, i, 1);
-            map.setCode(19, i, 1);
-        }
-        map.setCode(1, 1, 2);
-        map.setCode(18, 1, 2);
-        for (var i = 10; i < 13; i++) {
-            map.setCode(i, 6, 3);
-        }
-        map.setCode(17, 6, 2);
-        map.setCode(18, 6, 2);
-
-        scene.add(map);
-
-        var player : Player = new Player();
-        player.x = 2;
-        player.y = 3.0;
-        scene.add(player);
-        scene.player = player;
-
-    }
-
+    
 }
