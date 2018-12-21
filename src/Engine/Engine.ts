@@ -40,6 +40,15 @@ namespace Engine {
                 delete untyped._engine_sceneObjectId;
             }
         }
+
+        foreach<T extends SceneObject>(constructor : Constructor<T>, callback : (object : T) => void) {
+            for (var i in this.objects) {
+                var object = this.objects[i];
+                if (object instanceof constructor) {
+                    callback(object);
+                }
+            }
+        }
         
         // If the logic of any object adds new objects, their .logic() will be called at the end of the current frame.
         logic() : void {
@@ -138,6 +147,10 @@ namespace Engine {
 
     export function onKeyUp(event) {
         keyState[event.key] = false;
+    }
+
+    export interface Constructor<T> {
+        new (...args: any[]): T
     }
 
 }

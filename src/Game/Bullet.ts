@@ -20,6 +20,11 @@ namespace Game {
         logic() : void {
             this.saveOldPosition();
             this.move(this.dx, this.dy);
+            var enemy = this.findCollidingSprite(Enemy);
+            if (enemy) {
+                Engine.scene.remove(this);
+                enemy.hitByBullet();
+            }
         }
 
         private move(dx : number, dy : number) : void {

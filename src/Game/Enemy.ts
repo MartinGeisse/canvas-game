@@ -6,6 +6,8 @@ namespace Game {
 
 		private dx : number;
 		private dy : number;
+		private flashTime : number;
+		private health : number = 10;
 
 		constructor(wallTouchX : number, wallTouchY : number, dx : number, dy : number) {
 			super();
@@ -19,6 +21,7 @@ namespace Game {
 			this.dx = dx;
 			this.dy = dy;
 			this.drawable = Resources.textures.enemy;
+			this.flashTime = 0;
 
 			if (dy < 0) {
 				this.x -= halfSize;
@@ -30,6 +33,14 @@ namespace Game {
 
         logic() : void {
         	this.saveOldPosition();
+
+        	// handle flashing when hit
+        	if (this.flashTime > 0) {
+        		this.flashTime--;
+        		if (this.flashTime <= 0) {
+        			this.drawable = Resources.textures.enemy;
+        		}
+        	}
 
         	// retry at most 3 times, so we don't crash the application if this enemy is stuck in a wall
         	var retries = 3;
@@ -74,6 +85,17 @@ namespace Game {
 			var temp = this.dx;
 			this.dx = -this.dy;
 			this.dy = temp;
+        }
+
+        public hitByBullet() : void {
+        	this.health--;
+        	if (this.health > 0) {
+	        	this.flashTime = 2;
+    	    	this.drawable = Resources.textures.enemyHit;
+        	} else {
+        		Engine.scene.add(new ExplosionEffect(this.x + this.width / 2, this.y + this.height / 2, 2));
+        		Engine.scene.remove(this);
+        	}
         }
 
 	}
