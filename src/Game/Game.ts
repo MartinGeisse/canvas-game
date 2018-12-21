@@ -3,7 +3,7 @@ namespace Game {
 
     export function initialize() {
 
-        Resources.loadTextures(['emptybox', 'coinbox', 'coin', 'playerLeft', 'playerRight', 'bulletLeft', 'bulletRight']);
+        Resources.loadTextures(['emptybox', 'coinbox', 'coin', 'playerLeft', 'playerRight', 'bulletLeft', 'bulletRight', 'enemy', 'enemyHit']);
         Resources.loadAnimation('explosion', 'expl_01_$', 24, 0.3);
 
         var scene : Scene = new Scene();
@@ -42,6 +42,7 @@ namespace Game {
         scene.add(player);
         scene.player = player;
 
+        scene.add(new Enemy(15, 9, 0.1, 0));
     }
 
 }
