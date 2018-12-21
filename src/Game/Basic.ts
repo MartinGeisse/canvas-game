@@ -32,7 +32,7 @@ namespace Game {
 
     export class BlockType extends StandardLibrary.BlockType {
 
-        constructor(image : HTMLImageElement, public solid : boolean) {
+        constructor(image : Resources.Texture, public solid : boolean) {
             super(image);
         }
 
@@ -48,6 +48,11 @@ namespace Game {
 
         getZIndex() : number {
             return 2;
+        }
+
+        collidesWithBlockmap() : boolean {
+            var map : StandardLibrary.Map = (Engine.scene as Scene).map;
+            return map.any(this.x, this.y, this.x + this.width, this.y + this.height, type => (type as BlockType).solid);
         }
 
     }

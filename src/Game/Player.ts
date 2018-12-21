@@ -16,10 +16,12 @@ namespace Game {
         public dx : number = 0;
         public dy : number = 0;
         public jumpPower : number = 0;
+        public shootCooldown : number = 0;
+        public facing : number = 1;
 
         constructor() {
             super();
-            this.image = Resources.textures.playerRight;
+            this.drawable = Resources.textures.playerRight;
             this.width = Player.WIDTH;
             this.height = Player.HEIGHT;
         }
@@ -30,10 +32,12 @@ namespace Game {
             // determine left/right movement
             if (Engine.keyState['ArrowLeft']) {
                 this.dx -= Player.RUN_ACCELERATION;
-                this.image = Resources.textures.playerLeft;
+                this.drawable = Resources.textures.playerLeft;
+                this.facing = -1;
             } else if (Engine.keyState['ArrowRight']) {
                 this.dx += Player.RUN_ACCELERATION;
-                this.image = Resources.textures.playerRight;
+                this.drawable = Resources.textures.playerRight;
+                this.facing = 1;
             } else if (this.dx < 0) {
                 this.dx += Player.RUN_DECELERATION;
                 if (this.dx > 0) {
@@ -66,6 +70,20 @@ namespace Game {
 
             // perform movement
             this.move(this.dx, this.dy);
+
+            // shooting
+            if (this.shootCooldown == 0) {
+                if (Engine.keyState[' ']) {
+                    this.shootCooldown = 5;
+                    var bulletX = this.x + this.width / 2;
+                    var bulletY = this.y + this.height / 2;
+                    Engine.scene.add(new PlayerBullet(bulletX, bulletY, this.facing, -0.2));
+                    Engine.scene.add(new PlayerBullet(bulletX, bulletY, this.facing, 0));
+                    Engine.scene.add(new PlayerBullet(bulletX, bulletY, this.facing, 0.2));
+                }
+            } else {
+                this.shootCooldown--;
+            }
 
         }
 
@@ -121,11 +139,6 @@ namespace Game {
                 map.setCode(mapX, mapY, 0);
             }
 
-        }
-
-        private collidesWithBlockmap() : boolean {
-            var map : StandardLibrary.Map = (Engine.scene as Scene).map;
-            return map.any(this.x, this.y, this.x + this.width, this.y + this.height, type => (type as BlockType).solid);
         }
 
     }

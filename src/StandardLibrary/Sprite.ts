@@ -9,7 +9,12 @@ namespace StandardLibrary {
         public height : number = 50;
         public oldX : number;
         public oldY : number;
-        public image : HTMLImageElement;
+        public drawable : Resources.Drawable;
+        public creationTimestamp : number = Engine.now;
+
+        public getAge() : number {
+            return Engine.now - this.creationTimestamp;
+        }
 
         abstract logic() : void;
 
@@ -20,9 +25,12 @@ namespace StandardLibrary {
         }
 
         draw(fraction : number) : void {
+            if (typeof this.oldX == 'undefined') {
+                console.error('saveOldPosition() not called in ' + this.constructor.name);
+            }
             var x = this.oldX + fraction * (this.x - this.oldX);
             var y = this.oldY + fraction * (this.y - this.oldY);
-            Engine.canvasContext.drawImage(this.image, x, y, this.width, this.height);
+            this.drawable.draw(x, y, this.width, this.height, this.getAge());
         }
 
         abstract getZIndex() : number;

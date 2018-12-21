@@ -4,3 +4,4 @@ http://opengameart.org/content/classic-hero-and-baddies-pack
 	player-*.png
 self-made
 	spark.png
+https://opengameart.org/content/explosions-0

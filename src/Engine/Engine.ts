@@ -1,6 +1,13 @@
 
 namespace Engine {
 
+    export var now : number;
+
+    function updateNowTimestamp() {
+        now = new Date().getTime() / 1000;
+    }
+    updateNowTimestamp();
+
     export var canvas : HTMLCanvasElement = null;
     export var canvasContext : CanvasRenderingContext2D = null;
     export var scene : Scene = null;
@@ -66,12 +73,14 @@ namespace Engine {
     }
 
     function handleLogicFrame() {
+        updateNowTimestamp();
         if (scene != null) {
             scene.logic();
         }
     }
 
     function handleRenderFrame(fraction) {
+        updateNowTimestamp();
         canvasContext.setTransform(1, 0, 0, 1, 0, 0);
         if (scene != null) {
             scene.draw(fraction);
@@ -90,6 +99,9 @@ namespace Engine {
 
     export function startLoop(logicFrameMilliseconds, interpolatedRendering) {
         if (interpolatedRendering) {
+
+            // make sure the game logic runs once before drawing -- some initialization needs this
+            handleLogicFrame();
 
             // regular call only to the logic callback
             var lastLogicTime = new Date().getTime();

@@ -3,7 +3,7 @@ namespace StandardLibrary {
 
     export class BlockType {
 
-        constructor(public image : HTMLImageElement) {
+        constructor(public drawable : Resources.Drawable) {
         }
 
     }
@@ -67,8 +67,8 @@ namespace StandardLibrary {
             for (var x = 0; x < this.width; x++) {
                 for (var y = 0; y < this.height; y++) {
                     var blockType : BlockType = this.getBlock(x, y);
-                    if (blockType.image != null) {
-                        Engine.canvasContext.drawImage(blockType.image, x, y, 1, 1);
+                    if (blockType.drawable != null) {
+                        blockType.drawable.draw(x, y, 1, 1);
                     }
                 }
             }
