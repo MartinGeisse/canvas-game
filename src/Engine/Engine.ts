@@ -14,7 +14,7 @@ namespace Engine {
 
     export class Scene {
 
-        private idCounter : number = 0;
+        private nextIdToAssign : number = 0;
         private objects : SceneObject[] = [];
 
         add(object : SceneObject) {
@@ -27,9 +27,9 @@ namespace Engine {
                 }
             }
             untyped._engine_scene = this;
-            untyped._engine_sceneObjectId = this.idCounter;
-            this.objects[this.idCounter] = object;
-            this.idCounter++;
+            untyped._engine_sceneObjectId = this.nextIdToAssign;
+            this.objects[this.nextIdToAssign] = object;
+            this.nextIdToAssign++;
         }
 
         remove(object : SceneObject) {
@@ -52,15 +52,18 @@ namespace Engine {
         
         // If the logic of any object adds new objects, their .logic() will be called at the end of the current frame.
         logic() : void {
+            var minId = -1;
             do {
-                var maxId : number = this.idCounter;
+                var maxIdExclusive : number = this.nextIdToAssign;
                 for (var i in this.objects) {
                     var object = this.objects[i];
-                    if ((object as any)._engine_sceneObjectId <= maxId) {
+                    var id = (object as any)._engine_sceneObjectId;
+                    if (id >= minId && id < maxIdExclusive) {
                         object.logic();
                     }
                 }
-            } while (this.idCounter != maxId);
+                minId = maxIdExclusive;
+            } while (this.nextIdToAssign != maxIdExclusive);
         }
 
         draw(fraction : number) : void {
