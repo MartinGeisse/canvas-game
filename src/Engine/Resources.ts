@@ -1,6 +1,9 @@
 
 namespace Resources {
 
+    // TODO import properly
+    declare var Howl : any;
+
     //
     // drawable types
     //
@@ -54,9 +57,12 @@ namespace Resources {
         [key: string]: Texture
     }
 
-
     export interface Animations {
         [key: string]: Animation
+    }
+
+    export interface Sounds {
+        [key: string]: any
     }
 
     //
@@ -96,5 +102,19 @@ namespace Resources {
     }
 
     export var animations : Animations = {};
+
+    export function loadSound(name : string) {
+        sounds[name] = new Howl({
+            src: ['resources/sounds/' + name + '.wav']
+        });
+    }
+
+    export function loadSounds(names : string[]) {
+        for (var i in names) {
+            loadSound(names[i]);
+        }
+    }
+
+    export var sounds : Sounds = {};
 
 }

@@ -95,6 +95,7 @@ namespace Game {
         	} else {
         		Engine.scene.add(new ExplosionEffect(this.x + this.width / 2, this.y + this.height / 2, 2));
         		Engine.scene.remove(this);
+				Resources.sounds.kill.play();
         	}
         }
 
