@@ -17,6 +17,7 @@ namespace Engine {
 
         private nextIdToAssign : number = 0;
         private objects : SceneObject[] = [];
+        private sortedObjects : SceneObject[] = null;
 
         add(object : SceneObject) {
             var untyped = object as any;
@@ -53,6 +54,8 @@ namespace Engine {
         
         // If the logic of any object adds new objects, their .logic() will be called at the end of the current frame.
         logic() : void {
+
+            // call .logic() for all objects
             var minId = -1;
             do {
                 var maxIdExclusive : number = this.nextIdToAssign;
@@ -65,15 +68,18 @@ namespace Engine {
                 }
                 minId = maxIdExclusive;
             } while (this.nextIdToAssign != maxIdExclusive);
+
+            // sort objects for subsequent rendering
+            this.sortedObjects = this.objects.slice();
+            this.sortedObjects.sort(function(x : SceneObject, y : SceneObject) : number {
+                return x.getZIndex() - y.getZIndex();
+            });
+
         }
 
         draw(fraction : number) : void {
-            var sorted : SceneObject[] = this.objects.slice();
-            sorted.sort(function(x : SceneObject, y : SceneObject) : number {
-                return x.getZIndex() - y.getZIndex();
-            });
-            for (var i in sorted) {
-                sorted[i].draw(fraction);
+            for (var i in this.sortedObjects) {
+                this.sortedObjects[i].draw(fraction);
             }
         }
 
