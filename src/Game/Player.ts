@@ -80,7 +80,7 @@ namespace Game {
                     Engine.scene.add(new PlayerBullet(bulletX, bulletY, this.facing, -0.2));
                     Engine.scene.add(new PlayerBullet(bulletX, bulletY, this.facing, 0));
                     Engine.scene.add(new PlayerBullet(bulletX, bulletY, this.facing, 0.2));
-                    Resources.sounds.shoot.play();
+                    // Resources.sounds.shoot.play();
                 }
             } else {
                 this.shootCooldown--;
@@ -124,7 +124,7 @@ namespace Game {
                     if (map.getCode(coinboxX, coinboxY) == 2) {
                         map.setCode(coinboxX, coinboxY, 1);
                         Engine.scene.add(new CoinFromCoinboxEffect(coinboxX + 0.5, coinboxY + 0.5));
-                        Resources.sounds.coin.play();
+                        // Resources.sounds.coin.play();
                     }
                 } else {
                     this.y = Math.ceil(this.y) - this.height;
@@ -139,7 +139,7 @@ namespace Game {
             var blockCode = map.getCode(mapX, mapY);
             if (blockCode == 3) {
                 map.setCode(mapX, mapY, 0);
-                Resources.sounds.coin.play();
+                // Resources.sounds.coin.play();
             }
 
         }

@@ -104,9 +104,11 @@ namespace Resources {
     export var animations : Animations = {};
 
     export function loadSound(name : string) {
+    /*
         sounds[name] = new Howl({
             src: ['resources/sounds/' + name + '.wav']
         });
+    */
     }
 
     export function loadSounds(names : string[]) {

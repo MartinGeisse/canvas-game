@@ -1,7 +1,7 @@
 <html>
 <head>
     
-    <script type="text/javascript" src="lib/howler.js"></script>
+    <script type="text/javascript" src="lib/hhowler.js"></script>
 
     <script type="text/javascript" src="build/Engine/Engine.js"></script>
     <script type="text/javascript" src="build/Engine/Resources.js"></script>
@@ -21,11 +21,11 @@
 
 </head>
 <body onkeydown="Engine.onKeyDown(event);" onkeyup="Engine.onKeyUp(event);">
-    <canvas id="canvas" width="800" height="600">
+    <canvas id="canvas" width="800" height="600"></canvas>
     <script type="text/javascript">
         Engine.initialize(document.getElementById("canvas"));
+        Engine.startLoop(100);
         Game.initialize();
-        Engine.startLoop(100, true);
     </script>
 </body>
 </html>

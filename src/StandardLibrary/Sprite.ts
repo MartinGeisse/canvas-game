@@ -10,10 +10,10 @@ namespace StandardLibrary {
         public oldX : number;
         public oldY : number;
         public drawable : Resources.Drawable;
-        public creationTimestamp : number = Engine.now;
+        public creationTimestamp : number = Engine.renderTimestamp;
 
         public getAge() : number {
-            return Engine.now - this.creationTimestamp;
+            return Engine.renderTimestamp - this.creationTimestamp;
         }
 
         abstract logic() : void;
