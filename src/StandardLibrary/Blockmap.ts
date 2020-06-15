@@ -10,6 +10,7 @@ namespace StandardLibrary {
 
     export class Map implements Engine.SceneObject {
 
+        private scene : Engine.Scene;
         public readonly width : number;
         public readonly height : number;
         public readonly matrix : Uint8Array;
@@ -23,6 +24,10 @@ namespace StandardLibrary {
             this.height = height;
             this.matrix = new Uint8Array(width * height);
             this.blockTable = blockTable;
+        }
+
+        initialize(scene : Engine.Scene) : void {
+            this.scene = scene;
         }
 
         public getCode(x : number, y : number) : number {
@@ -95,6 +100,13 @@ namespace StandardLibrary {
                 }
             }
             return !onMixed;
+        }
+
+        public confineScrolling() : void {
+            var canvasWidthBlocks = Engine.canvas.width / this.scene.scale;
+            var canvasHeightBlocks = Engine.canvas.height / this.scene.scale;
+            this.scene.scrollX = Math.max(Math.min(this.scene.scrollX, this.width - canvasWidthBlocks), 0);
+            this.scene.scrollY = Math.max(Math.min(this.scene.scrollY, this.height - canvasHeightBlocks), 0);
         }
 
     }

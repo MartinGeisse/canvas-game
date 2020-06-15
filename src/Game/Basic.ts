@@ -17,7 +17,7 @@ namespace Game {
 
         constructor()  {
             super();
-            this.add(new Background());
+            this.scale = 30;
         }
 
         initializeMap(encodedMap : string[], decodingLookup : MapDecodingLookup) {
@@ -118,28 +118,6 @@ namespace Game {
             player.y = 3.0;
             this.add(player);
             this.player = player;
-        }
-
-    }
-
-    export class Background implements Engine.SceneObject {
-
-        logic() : void {
-        }
-
-        draw(fraction : number) : void {
-
-            // establish a block-oriented coordinate system instead of pixel-oriented (1 block = 30 pixels)
-            Engine.canvasContext.scale(30, 30);
-
-            // clear background
-            Engine.canvasContext.fillStyle = '#000000';
-            Engine.canvasContext.fillRect(0, 0, Engine.canvas.width, Engine.canvas.height);
-
-        }
-
-        getZIndex() : number {
-            return 0;
         }
 
     }

@@ -18,8 +18,13 @@ namespace Engine {
         private nextIdToAssign : number = 0;
         private objects : SceneObject[] = [];
         private sortedObjects : SceneObject[] = null;
+        public scrollX : number = 0;
+        public scrollY : number = 0;
+        public previousScrollX : number = 0;
+        public previousScrollY : number = 0;
+        public scale : number = 1;
 
-        add(object : SceneObject) {
+        add(object : SceneObject) : void {
             var untyped = object as any;
             if ('_engine_scene' in untyped) {
                 if (untyped._engine_scene === this) {
@@ -32,9 +37,12 @@ namespace Engine {
             untyped._engine_sceneObjectId = this.nextIdToAssign;
             this.objects[this.nextIdToAssign] = object;
             this.nextIdToAssign++;
+            if ("initialize" in object) {
+                object.initialize(this);
+            }
         }
 
-        remove(object : SceneObject) {
+        remove(object : SceneObject) : void {
             var untyped = object as any;
             if (('_engine_scene' in untyped) && (untyped._engine_scene === this)) {
                 delete this.objects[untyped._engine_sceneObjectId];
@@ -43,7 +51,7 @@ namespace Engine {
             }
         }
 
-        foreach<T extends SceneObject>(constructor : Constructor<T>, callback : (object : T) => void) {
+        foreach<T extends SceneObject>(constructor : Constructor<T>, callback : (object : T) => void) : void {
             for (var i in this.objects) {
                 var object = this.objects[i];
                 if (object instanceof constructor) {
@@ -54,6 +62,10 @@ namespace Engine {
         
         // If the logic of any object adds new objects, their .logic() will be called at the end of the current frame.
         logic() : void {
+
+            // prepare scroll interpolation
+            this.previousScrollX = this.scrollX;
+            this.previousScrollY = this.scrollY;
 
             // call .logic() for all objects
             var minId = -1;
@@ -75,17 +87,31 @@ namespace Engine {
                 return x.getZIndex() - y.getZIndex();
             });
 
+
         }
 
         draw(fraction : number) : void {
+
+            // draw the background (not a scene object because its size adjusts to the screen, not to game logic)
+            canvasContext.resetTransform();
+            canvasContext.fillStyle = '#000000';
+            canvasContext.fillRect(0, 0, Engine.canvas.width, Engine.canvas.height);
+
+            // draw game object
+            var effectiveScrollX = this.previousScrollX + (this.scrollX - this.previousScrollX) * fraction;
+            var effectiveScrollY = this.previousScrollY + (this.scrollY - this.previousScrollY) * fraction;
+            canvasContext.setTransform(this.scale, 0, 0, this.scale,
+                -effectiveScrollX * this.scale, -effectiveScrollY * this.scale);
             for (var i in this.sortedObjects) {
                 this.sortedObjects[i].draw(fraction);
             }
+
         }
 
     }
 
     export interface SceneObject {
+        initialize?(scene : Scene) : void;
         logic() : void;
         draw(fraction : number) : void;
         getZIndex() : number;
@@ -98,7 +124,6 @@ namespace Engine {
     }
 
     function handleRenderFrame(fraction) {
-        canvasContext.setTransform(1, 0, 0, 1, 0, 0);
         if (scene !== null) {
             scene.draw(fraction);
         }

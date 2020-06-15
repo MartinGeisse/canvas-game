@@ -56,6 +56,13 @@ namespace StandardLibrary {
             return result;
         }
 
+        public scrollTo(scene : Engine.Scene, borderSize : number) {
+            var width = Engine.canvas.width / scene.scale;
+            var height = Engine.canvas.height / scene.scale;
+            scene.scrollX = Math.max(Math.min(scene.scrollX, this.x - borderSize), this.x + borderSize - width);
+            scene.scrollY = Math.max(Math.min(scene.scrollY, this.y - borderSize), this.y + borderSize - height);
+        }
+
     }
 
 }
