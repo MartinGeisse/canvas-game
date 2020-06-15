@@ -83,6 +83,14 @@ namespace StandardLibrary {
             return 1;
         }
 
+        public foreach(x1 : number, y1: number, x2 : number, y2 : number, callback : (x : number, y : number, blockType: BlockType) => void) : void {
+            for (var x = Math.floor(x1); x < Math.ceil(x2); x++) {
+                for (var y = Math.floor(y1); y < Math.ceil(y2); y++) {
+                    callback(x, y, this.getBlock(x, y));
+                }
+            }
+        }
+
         public any(x1 : number, y1: number, x2 : number, y2 : number, predicate : (blockType: BlockType) => boolean) : boolean {
             return this.anyAll(x1, y1, x2, y2, predicate, true);
         }

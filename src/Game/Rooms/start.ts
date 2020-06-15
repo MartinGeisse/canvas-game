@@ -8,7 +8,7 @@ namespace Game.Rooms {
             '#                                                     #',
             '# o o **                                              #',
             '#  o                                                  #',
-            '#                                                     #',
+            '#                                                     >',
             '###########     #######################################',
             '###########     #######################################',
             '###########     #######################################',
@@ -21,7 +21,8 @@ namespace Game.Rooms {
             ' ': 'empty',
             '#': 'block',
             '*': 'coinbox',
-            'o': 'coin'
+            'o': 'coin',
+            '>': 'empty',
         };
         var scene : Scene = new Scene();
         scene.initializeMap(map, decoder);
@@ -29,6 +30,29 @@ namespace Game.Rooms {
         scene.add(new Enemy(10, 5, 0.1, 0));
         Engine.scene = scene;
 
+	}
+
+	export var second : () => any = function() {
+        var map = [
+            '##############################',
+            '#                            #',
+            '#                            #',
+            '#                            #',
+            '#                            #',
+            '<                            #',
+            '##############################',
+        ];
+        var decoder = {
+            ' ': 'empty',
+            '#': 'block',
+            '*': 'coinbox',
+            'o': 'coin',
+            '<': 'empty',
+        };
+        var scene : Scene = new Scene();
+        scene.initializeMap(map, decoder);
+        scene.addPlayer(1, 5);
+        Engine.scene = scene;
 	}
 
 }

@@ -98,6 +98,7 @@ namespace Game {
         }
 
         private move(moveX : number, moveY : number) {
+            var map = this.scene.map;
 
             // split large movements; x/y delta must be less than both 0.5 and half the sprite size
             if (moveX >= 0.3 || moveX <= -0.3 || moveY >= 0.3 || moveY <= -0.3) {
@@ -127,12 +128,11 @@ namespace Game {
                     this.y = Math.ceil(this.y);
                     this.jumpPower = 0;
                     // check for coinbox
-                    var map : StandardLibrary.Map = (Engine.scene as Scene).map;
                     var coinboxX = Math.round(this.x);
                     var coinboxY = this.y - 1;
                     if (map.getCode(coinboxX, coinboxY) == 2) {
                         map.setCode(coinboxX, coinboxY, 1);
-                        Engine.scene.add(new CoinFromCoinboxEffect(coinboxX + 0.5, coinboxY + 0.5));
+                        this.scene.add(new CoinFromCoinboxEffect(coinboxX + 0.5, coinboxY + 0.5));
                         Resources.sounds.coin.play();
                     }
                 } else {
@@ -142,7 +142,6 @@ namespace Game {
             }
 
             // collecting coins
-            var map : StandardLibrary.Map = (Engine.scene as Scene).map;
             var mapX = Math.floor(this.x + this.width / 2);
             var mapY = Math.floor(this.y + this.height / 2);
             var blockCode = map.getCode(mapX, mapY);
@@ -150,6 +149,15 @@ namespace Game {
                 map.setCode(mapX, mapY, 0);
                 Resources.sounds.coin.play();
             }
+
+            // touch special blocks
+            map.foreach(this.x, this.y, this.x + this.width, this.y + this.height, (x, y, type) => {
+                if (type instanceof BlockType) {
+                    if ("onPlayerTouch" in type) {
+                        type.onPlayerTouch(this, x, y);
+                    }
+                }
+            });
 
         }
 

@@ -124,6 +124,8 @@ namespace Game {
 
     export class BlockType extends StandardLibrary.BlockType {
 
+        public onPlayerTouch?(player : Player, x : number, y : number) : void;
+
         constructor(image : Resources.Texture, public solid : boolean) {
             super(image);
         }
