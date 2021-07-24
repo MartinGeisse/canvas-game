@@ -1,31 +1,25 @@
 <html>
 <head>
-    
-    <script type="text/javascript" src="lib/howler.js"></script>
-
-    <script type="text/javascript" src="build/Engine/Engine.js"></script>
-    <script type="text/javascript" src="build/Engine/Resources.js"></script>
-
-    <script type="text/javascript" src="build/StandardLibrary/Blockmap.js"></script>
-    <script type="text/javascript" src="build/StandardLibrary/Sprite.js"></script>
-
-    <script type="text/javascript" src="build/Game/Basic.js"></script>
-    <script type="text/javascript" src="build/Game/Effects.js"></script>
-    <script type="text/javascript" src="build/Game/Bullet.js"></script>
-    <script type="text/javascript" src="build/Game/Player.js"></script>
-    <script type="text/javascript" src="build/Game/Enemy.js"></script>
-    <script type="text/javascript" src="build/Game/GlobalBlockTypeTable.js"></script>
-    <script type="text/javascript" src="build/Game/Game.js"></script>
-
-    <script type="text/javascript" src="build/Game/Rooms/start.js"></script>
-
+  <script type="text/javascript" src="lib/howler.js"></script>
+  <script type="text/javascript" src="lib/require.js"></script>
 </head>
-<body onkeydown="Engine.onKeyDown(event);" onkeyup="Engine.onKeyUp(event);">
-    <canvas id="canvas" width="800" height="600"></canvas>
-    <script type="text/javascript">
+<body onkeydown="Engine && Engine.onKeyDown(event);" onkeyup="Engine && Engine.onKeyUp(event);" onClick="start()">
+  <canvas id="canvas" width="800" height="600"></canvas>
+  <script type="text/javascript">
+    started = false;
+    function start() {
+      if (started) {
+        return;
+      }
+      started = true;
+      requirejs(["build/Engine/Engine", "build/Game/Game"], function(Engine, Game) {
         Engine.initialize(document.getElementById("canvas"));
-        Engine.startLoop(100);
+        // Start the loop before initializing the game. Otherwise the first frame has weird timing.
+        Engine.startLoop(10);
         Game.initialize();
-    </script>
+        window.Engine = Engine;
+      });
+    }
+  </script>
 </body>
 </html>

@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "scripts": {
+    "tsc": "tsc",
+    "tscw": "tsc --watch"
+  },
+  "dependencies": {
+    "@types/howler": "^2.2.3",
+    "howler": "^2.2.3",
+    "typescript": "^4.3.5"
+  }
+}

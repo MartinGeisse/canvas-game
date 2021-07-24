@@ -1,12 +1,19 @@
 {
-    "compilerOptions": {
-        "target": "es2015",
-        "module": "commonjs",
-        "sourceMap": true,
-        "rootDir": "src",
-        "outDir": "build"
-    },
-    "exclude": [
-        "test"
-    ]
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "build",
+    "target": "es2015",
+    "lib": ["es2015", "dom"],
+    "module": "AMD",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "sourceMap": true,
+    "allowUmdGlobalAccess": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+  },
+  "include": ["src"]
 }
