@@ -1,5 +1,6 @@
 import {canvas, canvasContext, Constructor} from "./Engine";
 import {SceneObject} from "./SceneObject";
+import {Delay} from "./StandardSceneObjects/Delay";
 
 export class Scene {
 
@@ -88,6 +89,10 @@ export class Scene {
             this.sortedObjects[i].draw();
         }
 
+    }
+
+    delay(frames: number, callback: () => void) {
+        this.add(new Delay(frames, callback));
     }
 
 }

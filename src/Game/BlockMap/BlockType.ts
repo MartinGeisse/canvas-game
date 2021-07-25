@@ -8,7 +8,8 @@ export class BlockType {
 
     constructor(
         public drawable: Drawable,
-        public solid: boolean
+        public solid: boolean,
+        public destroyable: boolean = false,
     ) {
     }
 

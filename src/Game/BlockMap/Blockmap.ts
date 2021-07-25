@@ -78,31 +78,44 @@ export class Blockmap implements SceneObject {
         return 1;
     }
 
-    public foreach(x1: number, y1: number, x2: number, y2: number, callback: (x: number, y: number, blockType: BlockType) => void): void {
+    /**
+     * The callback may return a truthy value to stop early. If this happens, this method itself returns that value,
+     * otherwise it returns null.
+     */
+    public foreach<T>(
+        x1: number,
+        y1: number,
+        x2: number,
+        y2: number,
+        callback: (x: number, y: number, blockType: BlockType) => T
+    ): T|null {
         for (let x = Math.floor(x1); x < Math.ceil(x2); x++) {
             for (let y = Math.floor(y1); y < Math.ceil(y2); y++) {
-                callback(x, y, this.getBlock(x, y));
-            }
-        }
-    }
-
-    public any(x1: number, y1: number, x2: number, y2: number, predicate: (blockType: BlockType) => boolean): boolean {
-        return this.anyAll(x1, y1, x2, y2, predicate, true);
-    }
-
-    public all(x1: number, y1: number, x2: number, y2: number, predicate: (blockType: BlockType) => boolean): boolean {
-        return this.anyAll(x1, y1, x2, y2, predicate, false);
-    }
-
-    private anyAll(x1: number, y1: number, x2: number, y2: number, predicate: (blockType: BlockType) => boolean, onMixed: boolean): boolean {
-        for (let x = Math.floor(x1); x < Math.ceil(x2); x++) {
-            for (let y = Math.floor(y1); y < Math.ceil(y2); y++) {
-                if (predicate(this.getBlock(x, y)) == onMixed) {
-                    return onMixed;
+                const result = callback(x, y, this.getBlock(x, y));
+                if (result) {
+                    return result;
                 }
             }
         }
-        return !onMixed;
+        return null;
+    }
+
+    public any(x1: number, y1: number, x2: number, y2: number, predicate: (blockType: BlockType) => boolean): boolean {
+        return !!this.foreach(x1, y1, x2, y2, (x, y, blockType) => predicate(blockType));
+    }
+
+    public all(x1: number, y1: number, x2: number, y2: number, predicate: (blockType: BlockType) => boolean): boolean {
+        return !this.foreach(x1, y1, x2, y2, (x, y, blockType) => !predicate(blockType));
+    }
+
+    public getAnyOneForWhich(x1: number, y1: number, x2: number, y2: number, predicate: (blockType: BlockType) => boolean): [number, number]|null {
+        return this.foreach(x1, y1, x2, y2, (x, y, blockType) => predicate(blockType) ? [x, y] : null);
+    }
+
+    public getAllForWhich(x1: number, y1: number, x2: number, y2: number, predicate: (blockType: BlockType) => boolean): [number, number][] {
+        const result: [number, number][] = [];
+        this.foreach(x1, y1, x2, y2, (x, y, blockType) => predicate(blockType) ? result.push([x, y]) && false : null);
+        return result;
     }
 
     public confineScrolling(): void {

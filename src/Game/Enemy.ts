@@ -97,9 +97,20 @@ export class Enemy extends Sprite {
             this.flashTime = 2;
             this.drawable = textures.enemyHit;
         } else {
-            scene.add(new ExplosionEffect(this.x + this.width / 2, this.y + this.height / 2, 2));
             scene.remove(this);
+            scene.add(new ExplosionEffect(this.x + this.width / 2, this.y + this.height / 2, 2));
             sounds.kill.play();
+            for (let i = 1; i < 10; i++) {
+                scene.delay(i * 10, () => {
+                    for (let j = 0; j < 3; j++) {
+                        scene.add(new ExplosionEffect(
+                            this.x + this.width / 2 + 5*(Math.random() - 0.5),
+                            this.y + this.height / 2 + 5*(Math.random() - 0.5),
+                            2));
+                    }
+                    sounds.kill.play();
+                });
+            }
         }
     }
 

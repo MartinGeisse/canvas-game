@@ -66,4 +66,14 @@ export abstract class Sprite implements SceneObject {
         return map.any(this.x, this.y, this.x + this.width, this.y + this.height, type => (type as BlockType).solid);
     }
 
+    getAnyOneCollisionWithBlockmap(): [number, number]|null {
+        const map: Blockmap = getGameScene().map;
+        return map.getAnyOneForWhich(this.x, this.y, this.x + this.width, this.y + this.height, type => (type as BlockType).solid);
+    }
+
+    getAllCollisionsWithBlockmap(): [number, number][] {
+        const map: Blockmap = getGameScene().map;
+        return map.getAllForWhich(this.x, this.y, this.x + this.width, this.y + this.height, type => (type as BlockType).solid);
+    }
+
 }
