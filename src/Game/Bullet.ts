@@ -6,6 +6,7 @@ import {Sprite} from "./Basic/Sprite";
 import {BlockType} from "./BlockMap/BlockType";
 import {GameScene} from "./Basic/GameScene";
 import {globalBlockTypeTable} from "./GlobalBlockTypeTable";
+import {Crumb} from "./Effects/Crumb";
 
 export class PlayerBullet extends Sprite {
 
@@ -55,7 +56,18 @@ export class PlayerBullet extends Sprite {
         const blockType: BlockType = (scene as GameScene).map.getBlock(collision[0], collision[1]);
         if (blockType.destroyable) {
             (scene as GameScene).map.setBlock(collision[0], collision[1], globalBlockTypeTable.empty);
-            scene.add(new ExplosionEffect(collision[0] + 0.5, collision[1] + 0.5, 1));
+            // scene.add(new ExplosionEffect(collision[0] + 0.5, collision[1] + 0.5, 1));
+
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    scene.add(new Crumb(
+                        collision[0] + i * 0.33,
+                        collision[1] + j * 0.33,
+                        (Math.random() - 0.5) * 0.2,
+                        (Math.random() - 0.5) * 0.2
+                    ));
+                }
+            }
         }
     }
 
